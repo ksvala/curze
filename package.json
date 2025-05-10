@@ -1,0 +1,160 @@
+{
+  "name": "svala",
+  "displayName": "svala",
+  "description": "",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.99.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onView:mychangeImg",
+    "onCommand:svala.showList",
+    "onCommand:svala.config",
+    "onCommand:svala.analyze",
+    "onCommand:svala.selectWorkspacePath",
+    "onStartupFinished"
+  ],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "svala",
+          "title": "Svala",
+          "icon": "src/image/logo.svg"
+        }
+      ]
+    },
+    "views": {
+      "svala": [
+        {
+          "id": "mychangeImg",
+          "name": "svala",
+          "type": "webview"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "Svala",
+      "properties": {
+        "svala.cursorWorkspacePath": {
+          "type": "string",
+          "default": "",
+          "description": "Cursor Workspace Path"
+        },
+        "svala.apiProvider": {
+          "type": "string",
+          "enum": [
+            "OpenAI",
+            "Ollama",
+            "Google Gemini",
+            "xAI",
+            "DeepSeek"
+          ],
+          "default": "OpenAI",
+          "description": "选择API供应商"
+        },
+        "svala.apiBaseUrl": {
+          "type": "string",
+          "default": "http://localhost:11434",
+          "description": "Ollama API 基础URL (仅Ollama模式下显示)"
+        },
+        "svala.apiKey": {
+          "type": "string",
+          "default": "",
+          "description": "API Key 用于访问 AI 服务"
+        },
+        "svala.aiModel": {
+          "type": "string",
+          "default": "gpt-3.5-turbo",
+          "description": "选择要使用的 AI 模型"
+        }
+      }
+    },
+    "commands": [
+      {
+        "command": "svala.analyze",
+        "title": "Analyze Cursor Chat"
+      },
+      {
+        "command": "svala.k_setting",
+        "title": "Setting",
+        "icon": {
+          "dark": "src/image/setting-dark.svg",
+          "light": "src/image/setting-light.svg"
+        }
+      },
+      {
+        "command": "svala.selectWorkspacePath",
+        "title": "选择 Cursor 工作区路径"
+      },
+      {
+        "command": "svala.getViews",
+        "title": "获取视图信息"
+      },
+      {
+        "command": "svala.config",
+        "title": "Test Svala",
+        "icon": {
+          "dark": "src/image/setting-dark.svg",
+          "light": "src/image/setting-light.svg"
+        }
+      },
+      {
+        "command": "svala.showList",
+        "title": "List",
+        "icon": {
+          "dark": "src/image/list-dark.svg",
+          "light": "src/image/list-light.svg"
+        }
+      }
+    ],
+    "menus": {
+      "view/title": [
+        {
+          "command": "svala.config",
+          "group": "navigation"
+        },
+        {
+          "command": "svala.showList",
+          "group": "navigation"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run package",
+    "compile": "webpack",
+    "watch": "webpack --watch",
+    "package": "webpack --mode production --devtool hidden-source-map",
+    "compile-tests": "tsc -p . --outDir out",
+    "watch-tests": "tsc -p . -w --outDir out",
+    "pretest": "npm run compile-tests && npm run compile && npm run lint",
+    "lint": "eslint src",
+    "test": "vscode-test",
+    "dev": "webpack --watch"
+  },
+  "devDependencies": {
+    "@types/mocha": "^10.0.10",
+    "@types/node": "20.x",
+    "@types/vscode": "^1.99.0",
+    "@typescript-eslint/eslint-plugin": "^8.31.1",
+    "@typescript-eslint/parser": "^8.31.1",
+    "@vscode/test-cli": "^0.0.10",
+    "@vscode/test-electron": "^2.5.2",
+    "copy-webpack-plugin": "^13.0.0",
+    "eslint": "^9.25.1",
+    "node-loader": "^2.1.0",
+    "ts-loader": "^9.5.2",
+    "typescript": "^5.8.3",
+    "webpack": "^5.99.7",
+    "webpack-cli": "^6.0.1"
+  },
+  "dependencies": {
+    "@vscode/sqlite3": "^5.1.8-vscode",
+    "marked": "^15.0.11"
+  }
+}
