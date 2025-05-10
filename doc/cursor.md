@@ -1,28 +1,28 @@
-# Summary of Cursor Chat Record Reading Process and Methods
+# Cursor 读取聊天记录的流程和方法总结
 
-## Core Process
+## 核心流程
 
-1. **Determine Database Locations**:
-   - Obtain the globalStorage and workspaceStorage paths of Cursor
-   - Locate two different `state.vscdb` SQLite database files
+1. **确定数据库位置**：
+   - 获取 Cursor 的全局存储路径（globalStorage）和工作区存储路径（workspaceStorage）
+   - 分别定位到两个不同的 `state.vscdb` SQLite 数据库文件
 
-2. **Data Query Process**:
-   - Get the conversation ID list from workspaceStorage
-   - Use the conversation ID to query detailed data in the globalStorage database
-   - Process and assemble the complete conversation record
+2. **查询数据流程**：
+   - 从工作区存储（workspaceStorage）获取对话ID列表
+   - 使用对话ID查询全局存储（globalStorage）数据库中的详细数据
+   - 处理并组装完整对话记录
 
-3. **Data Assembly**:
-   - Merge main conversation data and bubble content
-   - Rebuild the complete conversation history in chronological order
+3. **数据组装**：
+   - 将主对话数据和对话气泡内容合并
+   - 按时间顺序重建完整对话历史
 
-## Chat Record Data Structure Relationships
+## 聊天记录数据结构关系
 
-### Data Hierarchy
+### 数据层次结构
 
 ```
 Workspace (workspaceStorage)
   └── Composer References
-       └── composer.composerData.allComposers[] (Conversation Reference List)
+       └── composer.composerData.allComposers[] (对话引用列表)
             └── composerId 
 
 Global Storage (globalStorage)
@@ -33,79 +33,79 @@ Global Storage (globalStorage)
        │    ├── path
        │    ├── createdAt
        │    ├── lastUpdatedAt
-       │    └── fullConversationHeadersOnly[] (Bubble Reference List)
+       │    └── fullConversationHeadersOnly[] (气泡引用列表)
        │         ├── bubbleId
        │         └── timestamp
-       └── Bubbles (Bubble Content)
+       └── Bubbles (气泡内容)
             ├── bubbleId:{composerId}:{bubbleId}
-            ├── content (User Input or AI Reply)
+            ├── content (用户输入或AI回复)
             ├── role (user/assistant)
             ├── timestamp
             └── metadata
 ```
 
-### Relationship Description
+### 关系说明
 
-1. **Workspace and Conversation References**:
-   - The `state.vscdb` in the hash directory under workspaceStorage contains `composer.composerData`
-   - `composer.composerData.allComposers` stores all conversation ID references
+1. **工作区与对话引用**：
+   - 工作区存储（workspaceStorage）下的哈希目录中的 `state.vscdb` 包含 `composer.composerData`
+   - `composer.composerData.allComposers` 保存了所有对话的ID引用
 
-2. **Conversation Details and Bubbles**:
-   - The `state.vscdb` in globalStorage stores all conversation details
-   - Metadata is stored in globalStorage with the key `composerData:{composerId}`
-   - The `fullConversationHeadersOnly` array in metadata stores all bubble references for the conversation
+2. **对话详情与气泡**：
+   - 全局存储（globalStorage）的 `state.vscdb` 中保存了所有对话的详细内容
+   - 元数据以 `composerData:{composerId}` 为键存储在全局存储中
+   - 元数据中的 `fullConversationHeadersOnly` 数组存储了该对话所有气泡的引用
 
-3. **Bubble Data**:
-   - Each bubble is stored in globalStorage with the key `bubbleId:{composerId}:{bubbleId}`
-   - Bubbles contain the actual conversation content, role information, and timestamp
+3. **气泡数据**：
+   - 每个气泡以 `bubbleId:{composerId}:{bubbleId}` 为键存储在全局存储中
+   - 气泡包含实际的对话内容、角色信息和时间戳
 
-### Key Data Field Mapping
+### 关键数据字段映射
 
-| Level      | Database Location | Table Name | Field Name | Description |
-|------------|------------------|------------|------------|-------------|
-| Workspace  | workspaceStorage | `composer.composerData.allComposers` | Stores all conversation references |
-| Conversation | globalStorage | ItemTable | `composerData:{composerId}` | Contains conversation metadata |
-| Conversation | globalStorage | cursorDiskKV | `composerId` | Unique conversation identifier, used to associate bubbles |
-| Conversation | globalStorage | cursorDiskKV | `fullConversationHeadersOnly` | Stores all bubble IDs and timestamps |
-| Bubble     | globalStorage | cursorDiskKV | `bubbleId:{composerId}:{bubbleId}` | Complete bubble storage key |
-| Bubble     | globalStorage | cursorDiskKV | `bubbleId` | Unique bubble identifier |
-| Bubble     | globalStorage | cursorDiskKV | `role` | Distinguishes user input and AI reply |
-| Bubble     | globalStorage | cursorDiskKV | `content` | Stores actual conversation content |
+| 层级 | 数据库位置 | 表名 | 字段名 | 作用 |
+|------|------------|--------|--------|------|
+| 工作区 | workspaceStorage | `composer.composerData.allComposers` | 存储所有对话的引用列表 |
+| 对话 | globalStorage | ItemTable | `composerData:{composerId}` | 包含对话元数据 |
+| 对话 | globalStorage | cursorDiskKV | `composerId` | 对话唯一标识符，用于关联气泡 |
+| 对话 | globalStorage | cursorDiskKV | `fullConversationHeadersOnly` | 存储所有气泡ID和时间戳 |
+| 气泡 | globalStorage | cursorDiskKV | `bubbleId:{composerId}:{bubbleId}` | 气泡完整存储键 |
+| 气泡 | globalStorage | cursorDiskKV | `bubbleId` | 气泡唯一标识符 |
+| 气泡 | globalStorage | cursorDiskKV | `role` | 区分用户输入和AI回复 |
+| 气泡 | globalStorage | cursorDiskKV | `content` | 存储实际对话内容 |
 
-## Data Structure Features
+## 数据结构特点
 
-1. **Separated Storage**:
-   - Conversation references are stored in the workspaceStorage database
-   - Conversation details are stored in the globalStorage database
+1. **分离存储**：
+   - 对话引用存储在工作区存储（workspaceStorage）的数据库中
+   - 对话详细内容存储在全局存储（globalStorage）的数据库中
 
-2. **Key-Value Storage**:
-   - All data is stored as key-value pairs in SQLite databases
-   - Main conversation data keys start with `composerData:`
-   - Bubble data keys are in the format `bubbleId:{composerId}:{bubbleId}`
+2. **键值对存储**：
+   - 所有数据以键值对形式存储在SQLite数据库中
+   - 对话主数据键以 `composerData:` 开头
+   - 气泡数据键格式为 `bubbleId:{composerId}:{bubbleId}`
 
-3. **Conversation Composition**:
-   - A conversation consists of one main record and multiple bubble records
-   - Bubble records contain the actual conversation content (user input and AI reply)
+3. **对话组成**：
+   - 一个对话包含一个主记录和多个气泡记录
+   - 气泡记录包含实际的对话内容（用户输入和AI回复）
 
-4. **Data Association**:
-   - Main data and bubble data are associated via composerId and bubbleId
-   - Rebuilding a conversation requires combining both parts of the data
+4. **数据关联**：
+   - 通过composerId和bubbleId关联主数据和气泡数据
+   - 重建对话需要两部分数据的组合
 
-## Data Flow Diagram
+## 数据流转图示
 
 ```
 ┌─────────────────────┐      ┌────────────────────┐      ┌───────────────────┐ 
-│   Workspace Index   │      │   Global Storage   │      │   Bubble Content  │
+│   工作区存储索引    │      │     全局存储       │      │    气泡详细内容    │
 │(workspaceStorage DB)│──┬──►│(globalStorage DB)  │──┬──►│  (Bubble Content) │
 └─────────────────────┘  │   └────────────────────┘  │   └───────────────────┘
                          │                           │
-  Query composer.composerData│                       │  Query bubble ID
+  查询composer.composerData│                         │  查询气泡ID
                          │                          │
                          ▼                          ▼
               ┌───────────────────┐         ┌──────────────┐
-              │  Get composerId   │◄────────┤ Assemble Full│
-              │  List and Link    │         │ Conversation │
-              └───────────────────┘         └──────────────┘
+              │   获取composerId  │◄────────┤ 组装完整对话  │
+              │  列表并关联数据   │         └──────────────┘
+              └───────────────────┘
 ```
 
-In summary, Cursor retrieves chat records by querying two different SQLite databases: first obtaining conversation ID references from workspaceStorage, then retrieving detailed content from globalStorage, and finally reconstructing the complete conversation structure by associating the IDs. This method allows efficient storage and retrieval of a large number of conversation histories.
+总结来说，Cursor通过查询两个不同位置的SQLite数据库获取聊天记录：首先从工作区存储（workspaceStorage）获取对话ID引用，然后从全局存储（globalStorage）获取详细内容，最后通过对ID的关联重建完整对话结构，这种方法允许高效地存储和检索大量对话历史。

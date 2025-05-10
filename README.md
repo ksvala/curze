@@ -1,86 +1,90 @@
-# Svala - Cursor Chat History Viewer
+<<<<<<< HEAD
+# curze
+=======
+# Svala - Cursor聊天记录查看器
 
-Svala is a VSCode extension for viewing and managing Cursor chat history.
+Svala是一个VSCode扩展，用于查看和管理Cursor聊天记录。
 
-## Features
+## 功能
 
-- Display a list of Cursor chat histories
-- View complete conversation content
-- Support for Markdown and code highlighting
-- Adapt to VSCode themes
+- 显示Cursor的聊天记录列表
+- 查看完整的聊天对话内容
+- 支持Markdown和代码高亮
+- 适配VSCode主题
 
-## Code Structure
+## 代码结构
 
-The latest code refactoring adopts a layered architecture design, improving code maintainability and scalability:
+最新的代码重构采用了分层架构设计，提高了代码的可维护性和可扩展性：
 
-### Data Access Layer
+### 数据访问层 (Data Access Layer)
 
-- `dbGet` / `dbAll`: Promise-based database query functions
-- `getAllComposersFromWorkspaceDb`: Get all conversation references from the workspace database
-- `getMainRecordFromGlobalDb`: Get conversation metadata from global storage
-- `getBubblesFromGlobalDb`: Get conversation bubble content from global storage
+- `dbGet` / `dbAll`: Promise化的数据库查询函数
+- `getAllComposersFromWorkspaceDb`: 从工作区数据库获取所有对话引用
+- `getMainRecordFromGlobalDb`: 从全局存储获取对话元数据
+- `getBubblesFromGlobalDb`: 从全局存储获取对话气泡内容
 
-### Business Logic Layer
+### 业务逻辑层 (Business Logic Layer)
 
-- `findWorkspaceDb`: Intelligently find the workspace database location
-- `getFullConversation`: Integrate data access layer functions to get complete conversation content
+- `findWorkspaceDb`: 智能查找工作区数据库位置
+- `getFullConversation`: 整合数据访问层函数，获取完整对话内容
 
-### View Layer
+### 视图层 (View Layer)
 
-- `formatMessageContent`: Format message content, handle Markdown
-- `generateChatHistoryHtml`: Generate conversation HTML page
-- `generateErrorHtml`: Generate error information page
+- `formatMessageContent`: 格式化消息内容，处理Markdown
+- `generateChatHistoryHtml`: 生成对话HTML页面
+- `generateErrorHtml`: 生成错误信息页面
 
-### Data Structure Mapping
+### 数据结构映射
 
-| Level      | Database Location | Table Name | Field Name/Key | Description |
-|------------|------------------|------------|----------------|-------------|
-| Workspace  | workspaceStorage | ItemTable  | `composer.composerData.allComposers` | Stores all conversation reference lists |
-| Conversation | globalStorage | ItemTable | `composerData:{composerId}` | Contains conversation metadata |
-| Conversation | globalStorage | cursorDiskKV | `composerId` | Unique conversation identifier, used to associate bubbles |
-| Conversation | globalStorage | cursorDiskKV | `fullConversationHeadersOnly` | Stores all bubble IDs and timestamps |
-| Bubble     | globalStorage | cursorDiskKV | `bubbleId:{composerId}:{bubbleId}` | Complete bubble storage key |
-| Bubble     | globalStorage | cursorDiskKV | `bubbleId` | Unique bubble identifier |
-| Bubble     | globalStorage | cursorDiskKV | `role` | Distinguishes user input and AI reply |
-| Bubble     | globalStorage | cursorDiskKV | `content` | Stores actual conversation content |
+| 层级 | 数据库位置 | 表名 | 字段名/Key | 作用 |
+|------|------------|--------|--------|------|
+| 工作区 | workspaceStorage | ItemTable | `composer.composerData.allComposers` | 存储所有对话的引用列表 |
+| 对话 | globalStorage | ItemTable | `composerData:{composerId}` | 包含对话元数据 |
+| 对话 | globalStorage | cursorDiskKV | `composerId` | 对话唯一标识符，用于关联气泡 |
+| 对话 | globalStorage | cursorDiskKV | `fullConversationHeadersOnly` | 存储所有气泡ID和时间戳 |
+| 气泡 | globalStorage | cursorDiskKV | `bubbleId:{composerId}:{bubbleId}` | 气泡完整存储键 |
+| 气泡 | globalStorage | cursorDiskKV | `bubbleId` | 气泡唯一标识符 |
+| 气泡 | globalStorage | cursorDiskKV | `role` | 区分用户输入和AI回复 |
+| 气泡 | globalStorage | cursorDiskKV | `content` | 存储实际对话内容 |
 
-## Installation
+## 安装
 
-1. Download the latest `.vsix` file
-2. In VSCode, go to the Extensions view
-3. Click the "..." in the upper right corner and select "Install from VSIX..."
-4. Select the downloaded `.vsix` file
+1. 下载最新的 `.vsix` 文件
+2. 在VSCode中，转到扩展视图
+3. 点击右上角的"..."，选择"从VSIX安装..."
+4. 选择下载的 `.vsix` 文件
 
-## Usage
+## 使用方法
 
-1. Open the command palette (`Ctrl+Shift+P` or `Cmd+Shift+P`)
-2. Type "Svala: Show Chat History List" and select it
-3. Select a workspace to view its chat history
+1. 打开命令面板 (`Ctrl+Shift+P` 或 `Cmd+Shift+P`)
+2. 输入 "Svala: 显示聊天记录列表" 并选择
+3. 选择一个工作区以查看其聊天记录
 
-## Notes
+## 注意事项
 
-- This extension needs to access Cursor's database files, which are usually located in the user's workspace storage and global storage directories
-- If you encounter problems, you can check the log information in the output panel
+- 此扩展需要访问Cursor的数据库文件，这些文件通常位于用户的工作区存储和全局存储目录中
+- 如果遇到问题，可以查看输出面板中的日志信息
 
-## Development
+## 开发
 
-### Build
+### 构建
 
 ```bash
 npm install
 npm run compile
 ```
 
-### Package
+### 打包
 
 ```bash
 npm run package
 ```
 
-### Debug
+### 调试
 
-Press F5 in VSCode to start a debug session.
+在VSCode中按F5启动调试会话。
 
-## License
+## 许可证
 
 MIT
+>>>>>>> 60604c8 (初始提交：VSCode Cursor 聊天记录扩展)

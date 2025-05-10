@@ -673,15 +673,15 @@ class MainViewProvider implements vscode.WebviewViewProvider {
 								filters: { 'JSON文件': ['json'], '所有文件': ['*'] },
 								title: '导出选中工作区的聊天记录'
 							});
-							if (fileUri) {
+								if (fileUri) {
 								fs.writeFile(fileUri.fsPath, JSON.stringify(allConversations, null, 2), 'utf8', err => {
-									if (err) {
-										vscode.window.showErrorMessage(`导出文件失败: ${err.message}`);
-									} else {
+										if (err) {
+											vscode.window.showErrorMessage(`导出文件失败: ${err.message}`);
+										} else {
 										vscode.window.showInformationMessage(`已成功导出选中工作区的聊天记录到 ${fileUri.fsPath}`);
-									}
-								});
-							}
+										}
+									});
+								}
 						} catch (error) {
 							vscode.window.showErrorMessage(`导出选中聊天记录失败: ${error instanceof Error ? error.message : '未知错误'}`);
 						}
@@ -1193,7 +1193,7 @@ class MainViewProvider implements vscode.WebviewViewProvider {
 			console.error('_updateWebviewContent: _view未定义，无法更新WebView内容');
 			return;
 		}
-
+		
 		try {
 			if (this._currentMode === 'list') {
 				this._view.webview.html = this._getListHtml();
@@ -2563,7 +2563,7 @@ async function getFullConversation(workspaceDbPath: string, globalDbPath: string
         if (!mainRecord) {
             throw new Error(`未找到对话记录 (ID: ${targetComposerId})`);
         }
-
+        
 		console.log(`mainRecord: ${JSON.stringify(composers)}`);
         // 4. 获取所有气泡内容
         const bubbles = await getBubblesFromGlobalDb(globalDbPath, targetComposerId);
